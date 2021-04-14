@@ -1,7 +1,7 @@
 <template>
-  <view>
-		<my-search @click="gotoSearch"></my-search>
-    <view class="scroll-view-container">
+  <view >
+		<my-search @click="gotoSearch" ></my-search>
+    <view class="scroll-view-container" >
       <!-- 左侧的滚动视图区域 -->
       <scroll-view class="left-scroll-view" scroll-y :style="{height: wh + 'px'}">
         <block v-for="(item,index) in cateList" :key="index">
@@ -73,7 +73,7 @@
 				// 导航到商品列表页
 				gotoGoodsList(item) {
 					uni.navigateTo({
-						url: '/subpkg/goods_list/goods_list?cid=' + item.cat_id
+						url: `/subpkg/goods_list/goods_list?cid=${item.cat_id}`
 					})
 				},
 			
