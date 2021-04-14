@@ -61,8 +61,11 @@
 		},
 		
 		onLoad(options) {
-			console.log(options)
-			this.goodsInfo.cid = options.cid
+			if(options.cid) {
+				this.goodsInfo.cid = options.cid
+			} else {
+				this.goodsInfo.query = options.query
+			}
 			this.getGoodsLists()
 		},
 		// 下拉刷新
