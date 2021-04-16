@@ -1,5 +1,9 @@
 import Vue from 'vue'
 import App from './App'
+
+// 1. 导入 store 的实例对象
+import store from './store/store.js'
+
 Vue.config.productionTip = false
 
 App.mpType = 'app'
@@ -9,7 +13,7 @@ import { $http } from '@escook/request-miniprogram'
 
 uni.$http = $http
 // 配置请求根路径
-$http.baseUrl = 'https://www.uinav.com'
+$http.baseUrl = 'https://api-hmugo-web.itheima.net'
 
 // 请求开始之前做一些事情
 $http.beforeRequest = function (options) {
@@ -32,7 +36,13 @@ uni.$showMsg = function (title = '数据加载失败！', duration = 1500) {
     icon: 'none',
   })
 }
+
+
+
+
+
 const app = new Vue({
-    ...App
+    ...App,
+		store
 })
 app.$mount()

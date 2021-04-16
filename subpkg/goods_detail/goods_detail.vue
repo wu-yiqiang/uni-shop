@@ -46,11 +46,29 @@
 </template>
 
 <script>
+	import { mapState,mapMutations,mapGetters } from 'vuex'
 	export default {
 		onLoad(option){
 			this.id = parseInt(option.goods_id)
 			// 获取详情页面数据
 			this.getGoodsDetails()
+		},
+		computed:{
+			...mapState('m_cart', ['cart']),
+			...mapGetters('m_cart', ['total'])
+		},
+		watch: {
+			total: {
+				handler(newVal) {
+					const findResult = this.options.find((x) => x.text === '购物车')
+					if (findResult) {
+						// 3. 动态为购物车按钮的 info 属性赋值
+						findResult.info = newVal
+					}
+				},
+				immediate: true
+			},
+			
 		},
 		data() {
 			return {
@@ -65,7 +83,7 @@
 				}, {
 					icon: 'cart',
 					text: '购物车',
-					info: 2
+					info: 0
 				}],
 				// 右侧按钮组的配置对象
 				buttonGroup: [{
@@ -83,6 +101,7 @@
 		},
 		
 		methods: {
+			...mapMutations('m_cart', ['addToCart']),
 			// 获取商品详细信息 
 			async getGoodsDetails() {
 				const { data : res } = await uni.$http.get(`/api/public/v1/goods/detail?goods_id=${this.id}`)
@@ -92,10 +111,9 @@
 				// 使用字符串的 replace() 方法，为 img 标签添加行内的 style 样式，从而解决图片底部空白间隙的问题
 				res.message.goods_introduce = res.message.goods_introduce.replace(/<img /g, '<img style="display:block;" ')
 				this.goods_info = res.message
-
 			},
 			
-			// 轮播图预览
+			/* 轮播图预览 */
 			preview(index) {
 				uni.previewImage({
 					// 预览时，默认显示图片的索引
@@ -105,15 +123,44 @@
 				})
 			},
 		
-			// 跳转到购物车
+			/* 跳转到购物车 */
 			onClick(e) {
 			 if (e.content.text === '购物车') {
+					
 					// 切换到购物车页面
 					uni.switchTab({
 						url: '/pages/cart/cart'
 					})
 				}
+			},
+			
+			/*  加入商品到购物车 */
+			buttonClick(e){
+				// 1. 判断是否点击了 加入购物车 按钮
+				if (e.content.text === '加入购物车') {
+					// 2. 组织一个商品的信息对象
+					const goods = {
+						 goods_id: this.goods_info.goods_id,       // 商品的Id
+						 goods_name: this.goods_info.goods_name,   // 商品的名称
+						 goods_price: this.goods_info.goods_price, // 商品的价格
+						 goods_count: 1,                           // 商品的数量
+						 goods_small_logo: this.goods_info.goods_small_logo, // 商品的图片
+						 goods_state: true                         // 商品的勾选状态
+					}
+					// 3. 通过 this 调用映射过来的 addToCart 方法，把商品信息对象存储到购物车中
+					this.addToCart(goods)
+				}
+			},
+		
+			/* 数据持久化方法 */
+			saveCartInfo() {
+				
 			}
+		},
+	
+		beforeDestroy() {
+			/* 数据持久化 */
+			this.saveCartInfo()
 		}
 	}
 </script>

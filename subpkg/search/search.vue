@@ -1,3 +1,4 @@
+0
 <template>
 	<view class="search-box">
 	  <!-- 使用 uni-ui 提供的搜索组件 -->
